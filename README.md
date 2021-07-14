@@ -123,7 +123,7 @@ func Test_TypedJsonParser_Encode(t *testing.T) {
 
 ## Install
 ```bash
-$ go get github.com/BambooTuna/typedjson@v1.0.1
+$ go get github.com/BambooTuna/typedjson@v1.0.2
 ```
 
 ## Contribution

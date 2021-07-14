@@ -1,4 +1,4 @@
-module typedjson
+module github.com/BambooTuna/typedjson
 
 go 1.16
 
