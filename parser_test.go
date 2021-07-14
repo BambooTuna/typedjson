@@ -44,13 +44,19 @@ func Test_TypedJsonParser_Decode(t *testing.T) {
 	require.Equal(t, string(b), "{\"type\":\"SampleMessage2\",\"data\":{\"items\":[\"apple\"]}}")
 
 	// 登録されていないものはデコードできない
-	_, err = parser.Decode(&SampleMessage3{Name: "takeo"})
+	_, err = parser.Decode(&SampleMessage3{Name: "BambooTuna"})
 	require.Error(t, err)
 
 	// 登録されていないものはフォースデコードできる
-	b, err = parser.ForceDecode(&SampleMessage3{Name: "takeo"})
+	b, err = parser.ForceDecode(&SampleMessage3{Name: "BambooTuna"})
 	require.NoError(t, err)
-	require.Equal(t, string(b), "{\"type\":\"SampleMessage3\",\"data\":{\"name\":\"takeo\"}}")
+	require.Equal(t, string(b), "{\"type\":\"SampleMessage3\",\"data\":{\"name\":\"BambooTuna\"}}")
+
+	// グローバルに定義されているデフォルトのパーサーを直接呼ぶこともできる
+	Register(&SampleMessage3{})
+	b, err = Decode(&SampleMessage3{Name: "BambooTuna"})
+	require.NoError(t, err)
+	require.Equal(t, string(b), "{\"type\":\"SampleMessage3\",\"data\":{\"name\":\"BambooTuna\"}}")
 }
 
 func Test_TypedJsonParser_Encode(t *testing.T) {
@@ -84,7 +90,7 @@ func Test_TypedJsonParser_Encode(t *testing.T) {
 	require.Equal(t, message, &SampleMessage2{})
 
 	// 登録されていないものはエンコードできない
-	_, err = parser.Encode([]byte("{\"type\":\"SampleMessage3\",\"data\":{\"name\":\"takeo\"}}"))
+	_, err = parser.Encode([]byte("{\"type\":\"SampleMessage3\",\"data\":{\"name\":\"BambooTuna\"}}"))
 	require.Error(t, err)
 
 	_, err = parser.Encode([]byte("{}"))
@@ -92,4 +98,10 @@ func Test_TypedJsonParser_Encode(t *testing.T) {
 
 	_, err = parser.Encode([]byte(""))
 	require.Error(t, err)
+
+	// グローバルに定義されているデフォルトのパーサーを直接呼ぶこともできる
+	Register(&SampleMessage3{})
+	message, err = Encode([]byte("{\"type\":\"SampleMessage3\",\"data\":{\"name\":\"BambooTuna\"}}"))
+	require.NoError(t, err)
+	require.Equal(t, message, &SampleMessage3{Name: "BambooTuna"})
 }
